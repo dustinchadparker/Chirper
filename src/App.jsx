@@ -3,94 +3,84 @@ import React, { Component } from 'react';
 
 
 class App extends Component {
-
   constructor() {
     super();
-
     this.handleInputChange = this.handleInputChange.bind(this);
 
     let date = new Date();
-    let today = date.getMonth()+1 + "/" + date.getDate() 
-                + "/" + date.getFullYear() + " " + date.getHours() 
-                + ":" + date.getMinutes() + ":" + date.getSeconds();
+    let today = date.getMonth() + 1 + "/" + date.getDate()
+      + "/" + date.getFullYear() + " " + date.getHours()
+      + ":" + date.getMinutes() + ":" + date.getSeconds();
 
     this.state = {
       chirp: "Enter Chirp Here",
       user: "Charlie ",
       date: today,
+      chirps: []
     };
   }
 
-  //handle event for setting the text in state
   handleInputChange(e) {
-    this.setState({ chirp: e.target.value})
-}
-
-  postChirp = (postContent, name, date) => {
-
-    postContent = this.state.chirp;
-    name = this.state.user;
-    date = this.state.date;
-   
-    let containerDiv = document.getElementsByClassName("container")[0];
-    let mediaDiv = document.createElement("div");
-    mediaDiv.classList.add("media-body");
-    containerDiv.classList.add("border");
-
-    mediaDiv.classList.add("border-primary", "border");
-
-    let postH = document.createElement('h4');
-    postH.classList.add("media-heading");
-    let post = document.createTextNode(name);
-    postH.appendChild(post);
-
-    let smallI = document.createElement('small');
-    let smallI2 = document.createElement('i');
-    let dateA = document.createTextNode(date);
-
-    smallI2.appendChild(dateA);
-    smallI.appendChild(smallI2);
-
-    
-    containerDiv.appendChild(mediaDiv);
-    mediaDiv.appendChild(postH);
-    postH.appendChild(smallI);
-
-    let par = document.createElement('p');
-    let parT = document.createTextNode(postContent);
-
-    par.appendChild(parT);
-
-    mediaDiv.appendChild(par);
-
+    this.setState({ chirp: e.target.value })
   }
 
-componentDidMount() {
+  postChirp = () => {
+    let chirpContent = this.state.chirp;
 
-  this.postChirp();
-  this.postChirp();
+    // we want to create an object that represents that shape of a chirp
+    // ... so it will have 3 properties, the name, the content & the date.
 
-}
+    let newChirp = {
+      name: this.state.user,
+      content: chirpContent,
+      date: this.state.date,
+    }
+
+    // now that we have it, we want to shove it into an array that we are keeping
+    // in our state so that we can reference it in the render method
+
+    this.setState({
+      ...this.state,
+      chirp: '',
+      chirps: [...this.state.chirps, newChirp]
+    });
+  }
 
   render() {
-
     return (
-
       <div className="App">
-
-
-          <div class="form-group">
-            <label for="chirp" class="text-center align-middle"></label>
-            <textarea class="form-control" rows="5" id="chirp"
-              placeholder="Enter Chirp Here"
-              onChange={this.handleInputChange}></textarea>
-          </div>
-
-          <button class="btn btn-primary" onClick={this.postChirp.bind(this)}>Post Chirp</button>
+        <div class="form-group">
+          <label for="chirp" class="text-center align-middle"></label>
+          <textarea
+            class="form-control"
+            rows="5"
+            id="chirp"
+            placeholder="Enter Chirp Here"
+            value={this.state.chirp}
+            onChange={this.handleInputChange}>
+          </textarea>
         </div>
-        
-        );
-      }
-    }
-    
-    export default App;
+        <button class="btn btn-primary" onClick={this.postChirp}>Post Chirp</button>
+        <div class="chirp-list">
+          {/* this is where we are going to use JS to list all of the chirps we have in our component's state */}
+          {this.state.chirps.map(chirp => {
+            // the "map" function looks at each item in an array and returns something.
+            // so for this case, we want to look at each "chirp" in the chirps array and
+            // display a div with the content inside. This way you dont have to generate
+            // a bunch of HTML tags manualy.
+            return (
+
+              <div class="media-body border border-primary">
+                <h4 class="media-heading"> {chirp.name}: <small><i>{chirp.date}</i></small></h4>
+                <p class="chirpP">{chirp.content}</p>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+    );
+  }
+}
+
+export default App;
